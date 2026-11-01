@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}{{ t('app_name') }} · {{ t('hero_title') }}{% endblock %}
+{% block navlinks %}<nav class="navlinks"><a href="#how">{{ t('nav_how') }}</a><a href="#features">{{ t('nav_features') }}</a><a href="#why">{{ t('nav_why') }}</a></nav>{% endblock %}
+{% block shell %}
+<div class="hero-bg"><div class="wrap wide">
+  <section class="hero">
+    <div>
+      <p class="eyebrow">Cash Power · Rwanda</p>
+      <h1>{{ t('hero_1') }} <span class="hl">{{ t('hero_2') }}</span></h1>
+      <p class="sub">{{ t('hero_sub') }}</p>
+      <div class="btns"><a class="btn" href="{{ url_for('auth.register') }}">{{ t('signup') }} →</a><a class="btn ghost" href="{{ url_for('auth.login') }}">{{ t('login') }}</a></div>
+    </div>
+    <div class="tcard" id="tryit" data-vat="{{ vat }}">
+      <p class="mono-label">{{ t('try_title') }}</p>
+      <label for="t-rwf" style="margin-top:0">{{ t('try_amount') }}</label><input id="t-rwf" type="number" min="100" step="100" value="5000" inputmode="numeric">
+      <label for="t-use">{{ t('try_use') }}</label><input id="t-use" type="number" min="0.5" step="0.5" value="3" inputmode="decimal">
+      <label for="t-used">{{ t('try_used') }}</label><input id="t-used" type="number" min="0" step="1" value="0" inputmode="decimal">
+      <div class="tryout" aria-live="polite"><span class="n" id="t-days">–</span><span>{{ t('try_days') }}</span>
+        <small><b id="t-kwh">–</b> {{ t('try_units') }} · {{ t('try_again') }} <b id="t-date">–</b></small></div>
+      <div class="rows" id="t-rows" aria-live="polite"></div>
+      <p class="tiny">{{ t('try_note') }}</p>
+    </div>
+  </section>
+</div></div>
+
+<section class="sec alt-bg" id="how"><div class="wrap wide">
+  <p class="eyebrow">01 · {{ t('nav_how') }}</p>
+  <h2>{{ t('step_title') }}</h2>
+  <div class="cards3">
+    {% for n in ['1','2','3'] %}<div class="step-card"><span class="no">0{{ n }}</span><h3>{{ t('s'+n+'_t') }}</h3><p>{{ t('s'+n+'_d') }}</p></div>{% endfor %}
+  </div>
+</div></section>
+
+<section class="sec" id="features"><div class="wrap wide">
+  <p class="eyebrow">02 · {{ t('nav_features') }}</p>
+  <h2>{{ t('feat_title') }}</h2>
+  <div class="fgrid">
+    {% for n in ['1','2','3','4','5'] %}<div class="fcard"><span class="no">0{{ n }}</span><h3>{{ t('ft'+n+'_t') }}{% if n == '5' %}<span class="soon">{{ t('soon') }}</span>{% endif %}</h3><p>{{ t('ft'+n+'_d') }}</p></div>{% endfor %}
+  </div>
+</div></section>
+
+<section class="sec alt-bg" id="why"><div class="wrap wide">
+  <p class="eyebrow">03 · {{ t('nav_why') }}</p>
+  <div class="why">
+    <div class="stat">44.9%<small>{{ t('why_src') }}</small></div>
+    <div>
+      <h2 style="margin-bottom:14px">{{ t('why_title') }}</h2>
+      <p class="lead" style="margin:0">{{ t('why_d') }}</p>
+      <div class="est"><b>{{ t('est_t') }}</b>{{ t('est_d') }}</div>
+    </div>
+  </div>
+</div></section>
+
+<section class="sec" style="padding-bottom:0"><div class="wrap wide">
+  <div class="cta">
+    <h2>{{ t('cta_t') }}</h2>
+    <div class="btns"><a class="btn" href="{{ url_for('auth.register') }}">{{ t('signup') }} →</a><a class="btn ghost" href="{{ url_for('auth.login') }}">{{ t('login') }}</a></div>
+  </div>
+</div></section>
+<div class="band" aria-hidden="true"></div>
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends "auth_base.html" %}
+{% block title %}{{ t('otp_title') }}{% endblock %}
+{% block form %}
+<h1>{{ t('otp_title') }}</h1>
+{% if ctx.channel == 'email' and not ctx.sent %}
+<p class="lead">{{ t('otp_not_sent') }} (<b>{{ ctx.dest }}</b>)</p>
+{% else %}
+<p class="lead">{{ t('otp_sent_email') if ctx.channel == 'email' else t('otp_sent') }} <b>{{ ctx.dest }}</b></p>
+{% endif %}
+{% if demo %}<div class="demo">{{ t('otp_demo') }} <b>{{ demo }}</b></div>{% endif %}
+<form class="card" method="post">
+  <input type="hidden" name="csrf" value="{{ csrf() }}">
+  <label for="code" class="sr">{{ t('otp_code') }}</label>
+  <input id="code" name="code" class="otp-input" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="\d{6}" required autofocus>
+  <div style="margin-top:18px"><button class="btn">{{ t('verify') }}</button></div>
+</form>
+<form method="post" action="{{ url_for('auth.otp_resend') }}" class="center">
+  <input type="hidden" name="csrf" value="{{ csrf() }}">
+  <button class="btn ghost small">{{ t('resend') }}</button>
+</form>
+{% endblock %}

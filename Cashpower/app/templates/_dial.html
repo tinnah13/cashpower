@@ -1,0 +1,10 @@
+{% macro dial(days, big=False) -%}
+{%- set has = days is not none -%}
+{%- set f = ((days / 21) if has else 0) -%}{%- set f = 1 if f > 1 else f -%}
+<svg class="dial{{ ' big' if big }}{{ ' low' if has and days <= 3 }}{{ ' none' if not has }}" viewBox="0 0 200 124" role="img" aria-label="{{ (days|round|int ~ ' ' ~ t('days_word') ~ ' ' ~ t('left_word')) if has else t('no_forecast') }}">
+  <path class="track" pathLength="100" d="M20 104 A80 80 0 0 1 180 104"/>
+  <path class="fill" pathLength="100" stroke-dasharray="{{ (f * 100)|round(1) }} 100" d="M20 104 A80 80 0 0 1 180 104"/>
+  <text class="num" x="100" y="92">{{ days|round|int if has else '–' }}</text>
+  <text class="unit" x="100" y="116">{{ (t('days_word') ~ ' ' ~ t('left_word')) if has else t('no_forecast') }}</text>
+</svg>
+{%- endmacro %}

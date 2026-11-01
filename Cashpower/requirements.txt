@@ -1,0 +1,4 @@
+Flask>=3.0
+Flask-SQLAlchemy>=3.1
+# Only if you switch the database to MySQL (see README):
+# PyMySQL>=1.1

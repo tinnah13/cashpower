@@ -1,0 +1,66 @@
+{% extends "auth_base.html" %}
+{% block title %}{{ t('signup') }} · {{ t('app_name') }}{% endblock %}
+{% block form %}
+<h1>{{ t('signup') }}</h1>
+<p class="lead" id="step-label" data-tpl="{{ t('step') }} {n} {{ t('of') }} 5 · {name}"></p>
+<div class="steps" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
+<form class="card" method="post" id="reg-form" novalidate autocomplete="on">
+  <input type="hidden" name="csrf" value="{{ csrf() }}">
+
+  <section class="step" data-title="{{ t('s_type') }}">
+    <h2>{{ t('account_type') }}</h2>
+    <div class="types">
+      {% for k in ['household','business','landlord'] %}
+      <label class="type"><input type="radio" name="acct_type" value="{{ k }}" {% if form.get('acct_type','household')==k %}checked{% endif %}><b>{{ t('type_'+k) }}</b><span>{{ t('type_'+k+'_d') }}</span></label>
+      {% endfor %}
+    </div>
+    <div style="margin-top:18px"><button class="btn" data-go="1">{{ t('next') }}</button></div>
+  </section>
+
+  <section class="step" data-title="{{ t('s_details') }}">
+    <label for="name">{{ t('full_name') }}</label>
+    <input id="name" name="name" autocomplete="name" value="{{ form.get('name','') }}">
+    <label for="reg-phone">{{ t('phone') }}</label>
+    <input id="reg-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="0788 123 456" value="{{ form.get('phone','') }}">
+    <div class="hint">{{ t('phone_hint') }}</div><div class="field-msg" id="phone-msg" aria-live="polite"></div>
+    <label for="email">{{ t('email') }}</label>
+    <input id="email" name="email" type="email" autocomplete="email" value="{{ form.get('email','') }}">
+    <div class="row" style="margin-top:18px"><button class="btn ghost" data-go="-1">{{ t('back') }}</button><button class="btn" data-go="1">{{ t('next') }}</button></div>
+  </section>
+
+  <section class="step" data-title="{{ t('s_meter') }}">
+    <label for="meter_no">{{ t('meter_number') }}</label>
+    <input id="meter_no" name="meter_no" inputmode="numeric" maxlength="13" placeholder="01234567890" value="{{ form.get('meter_no','') }}">
+    <div class="hint">{{ t('meter_hint') }}</div><div class="field-msg" id="meter-msg" aria-live="polite"></div>
+    <label for="nickname">{{ t('meter_nickname') }}</label>
+    <input id="nickname" name="nickname" maxlength="30" placeholder="{{ t('nickname_hint') }}" value="{{ form.get('nickname','') }}">
+    <div class="row" style="margin-top:18px"><button class="btn ghost" data-go="-1">{{ t('back') }}</button><button class="btn" data-go="1">{{ t('next') }}</button></div>
+  </section>
+
+  <section class="step" data-title="{{ t('s_password') }}">
+    <label for="password">{{ t('password') }}</label>
+    <div class="pwrap"><input id="password" name="password" type="password" autocomplete="new-password">
+      <button type="button" data-toggle-pw="password" data-show="{{ t('show') }}" data-hide="{{ t('hide') }}">{{ t('show') }}</button></div>
+    <label for="confirm">{{ t('confirm_password') }}</label>
+    <div class="pwrap"><input id="confirm" name="confirm" type="password" autocomplete="new-password">
+      <button type="button" data-toggle-pw="confirm" data-show="{{ t('show') }}" data-hide="{{ t('hide') }}">{{ t('show') }}</button></div>
+    <ul class="checks" id="pw-checks">
+      {% for k in ['len','upper','lower','num','sym','match'] %}<li data-k="{{ k }}">{{ t('pw_'+k) }}</li>{% endfor %}
+    </ul>
+    <div class="row" style="margin-top:18px"><button class="btn ghost" data-go="-1">{{ t('back') }}</button><button class="btn" data-go="1">{{ t('next') }}</button></div>
+  </section>
+
+  <section class="step review" data-title="{{ t('s_review') }}">
+    <dl>
+      <dt>{{ t('account_type') }}</dt><dd id="r_type"></dd>
+      <dt>{{ t('full_name') }}</dt><dd id="r_name"></dd>
+      <dt>{{ t('phone') }}</dt><dd id="r_phone"></dd>
+      <dt>{{ t('email') }}</dt><dd id="r_email"></dd>
+      <dt>{{ t('meter_number') }}</dt><dd id="r_meter"></dd>
+    </dl>
+    <label class="terms"><input type="checkbox" name="terms" value="1" required><span>{{ t('accept_terms') }}</span></label>
+    <div class="row" style="margin-top:18px"><button class="btn ghost" data-go="-1">{{ t('back') }}</button><button class="btn" type="submit">{{ t('send_code') if otp_required else t('signup') }}</button></div>
+  </section>
+</form>
+<p class="alt">{{ t('have_account') }} <a href="{{ url_for('auth.login') }}">{{ t('login') }}</a></p>
+{% endblock %}

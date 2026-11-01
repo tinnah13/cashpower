@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block shell %}
+<div class="split">
+  <aside class="side">
+    <div class="side-in">
+      <p class="eyebrow">Cash Power · Rwanda</p>
+      <h1>{{ t('hero_1') }} <span class="hl">{{ t('hero_2') }}</span></h1>
+      <p class="sub">{{ t('hero_sub') }}</p>
+      <div class="tcard in-auth" id="tryit" data-vat="{{ vat }}">
+        <p class="mono-label">{{ t('try_title') }}</p>
+        <label for="t-rwf">{{ t('try_amount') }}</label><input id="t-rwf" type="number" min="100" step="100" value="5000" inputmode="numeric">
+        <label for="t-use">{{ t('try_use') }}</label><input id="t-use" type="number" min="0.5" step="0.5" value="3" inputmode="decimal">
+      <label for="t-used">{{ t('try_used') }}</label><input id="t-used" type="number" min="0" step="1" value="0" inputmode="decimal">
+        <div class="tryout" aria-live="polite"><span class="n" id="t-days">–</span><span>{{ t('try_days') }}</span>
+          <small><b id="t-kwh">–</b> {{ t('try_units') }} · {{ t('try_again') }} <b id="t-date">–</b></small></div>
+        <div class="rows" id="t-rows" aria-live="polite"></div>
+      <p class="tiny">{{ t('try_note') }}</p>
+      </div>
+    </div>
+    <div class="band" aria-hidden="true"></div>
+  </aside>
+  <section class="formside"><div class="formwrap">
+    {% with msgs = get_flashed_messages(with_categories=true) %}{% for cat, m in msgs %}<div class="flash {{ cat }}" role="status">{{ m }}</div>{% endfor %}{% endwith %}
+    {% block form %}{% endblock %}
+  </div></section>
+</div>
+{% endblock %}

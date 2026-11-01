@@ -1,0 +1,14 @@
+{% extends "auth_base.html" %}
+{% block form %}
+<h1>{{ t('reset_title') }}</h1>
+<form class="card" method="post">
+  <input type="hidden" name="csrf" value="{{ csrf() }}">
+  <label for="rpw">{{ t('new_pw') }}</label>
+  <div class="pwrap"><input id="rpw" name="password" type="password" autocomplete="new-password" required>
+    <button type="button" data-toggle-pw="rpw" data-show="{{ t('show') }}" data-hide="{{ t('hide') }}">{{ t('show') }}</button></div>
+  <label for="rcf">{{ t('confirm_password') }}</label>
+  <input id="rcf" name="confirm" type="password" autocomplete="new-password" required>
+  <ul class="checks" id="rchecks">{% for k in ['len','upper','lower','num','sym','match'] %}<li data-k="{{ k }}">{{ t('pw_'+k) }}</li>{% endfor %}</ul>
+  <div style="margin-top:18px"><button class="btn" id="rbtn" disabled>{{ t('save') }}</button></div>
+</form>
+{% endblock %}

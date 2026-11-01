@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>{{ t('settings') }}</h1>
+<div class="card">
+  <p class="muted" style="margin:0">{{ t('my_id') }}</p><div class="id-badge" style="font-size:18px">{{ user.uid }}</div>
+  <p style="margin:12px 0 0"><b>{{ user.name }}</b><br>{{ fmt_phone(user.phone) }} · {{ user.email }}</p>
+</div>
+<div class="card">
+  <h2>{{ t('devices') }}</h2>
+  {% for d in devs %}<p style="margin:6px 0">{{ d.label }} {% if d.id == current %}<span class="pill">{{ t('this_device') }}</span>{% endif %}<br><small class="muted">{{ d.created[:10] }}</small></p>{% else %}<p class="muted">{{ t('no_devices') }}</p>{% endfor %}
+  <form method="post" action="{{ url_for('auth.logout_all') }}"><input type="hidden" name="csrf" value="{{ csrf() }}"><button class="btn danger small">{{ t('logout_all') }}</button></form>
+</div>
+{% endblock %}

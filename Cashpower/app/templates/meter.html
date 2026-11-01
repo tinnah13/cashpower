@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% from "_dial.html" import dial with context %}
+{% block wrapcls %}wide{% endblock %}
+{% block title %}{{ m.nickname }} · {{ t('app_name') }}{% endblock %}
+{% block content %}
+<p class="mono-label"><a href="{{ url_for('views.dashboard') }}">← {{ t('dashboard') }}</a></p>
+<h1>{{ m.nickname }} <span class="tag {{ "" if role=="owner" else "amber" }}">{{ t('owner') if role=='owner' else (t('role_add') if role=='add' else t('role_view')) }}</span></h1>
+<p class="lead mono" style="letter-spacing:.08em">{{ m.meter_no[:4] }} {{ m.meter_no[4:8] }} {{ m.meter_no[8:] }}</p>
+
+{% if fc and fc.low %}<div class="banner">{{ t('low_banner') }} {{ fc.buy_by.strftime('%d/%m/%Y') }}</div>{% endif %}
+{% if fc and fc.stale %}<div class="banner">{{ t('stale_banner') }}</div>{% endif %}
+
+<div class="card">
+  <h2>{{ t('forecast') }}</h2>
+  <div class="mhead">
+    {{ dial(fc.days if fc else none, true) }}
+    <div>
+    {% if fc %}
+      <div class="facts">
+        <div><small>{{ t('est_left') }}</small><div class="v">{{ fc.balance }} <em>kWh</em></div></div>
+        <div><small>{{ t('run_out_between') }}</small><div class="v">{{ fc.lo.strftime('%d/%m') }}<em> {{ t('and') }} </em>{{ fc.hi.strftime('%d/%m') }}</div></div>
+        <div><small>{{ t('buy_by') }}</small><div class="v">{{ fc.buy_by.strftime('%d/%m') }}</div></div>
+      </div>
+      <p class="hint-note">{{ t('estimate_note') }} {{ t('range_pm') }}{{ fc.spread }}%.</p>
+      <p class="hint-note">{% if calib[1] %}{{ t('calib_some').replace('{n}', calib[1]|string).replace('{p}', (calib[0]*100)|round|int|string) }}{% else %}{{ t('calib_none') }}{% endif %}</p>
+    {% else %}<p class="muted" style="margin:0">{{ t('need_data') }}</p>{% endif %}
+    </div>
+  </div>
+</div>
+
+<div class="two">
+{% if role in ('owner','add') %}
+<form class="card" method="post" action="{{ url_for('usage.add_entry', mid=m.id) }}">
+  <h2>{{ t('log_purchase') }}</h2>
+  <input type="hidden" name="csrf" value="{{ csrf() }}"><input type="hidden" name="kind" value="purchase">
+  <label for="p-day">{{ t('date') }}</label><input id="p-day" type="date" name="day" value="{{ today }}" max="{{ today }}">
+  <label for="p-kwh">{{ t('units_kwh') }}</label><input id="p-kwh" name="kwh" type="number" step="0.01" min="0" inputmode="decimal">
+  <div class="hint">{{ t('units_optional') }}</div>
+  <label for="p-rwf">{{ t('amount_rwf') }}</label><input id="p-rwf" name="rwf" type="number" min="1" inputmode="numeric" required>
+  <div style="margin-top:14px"><button class="btn">{{ t('save') }}</button></div>
+</form>
+<form class="card" method="post" action="{{ url_for('usage.add_entry', mid=m.id) }}">
+  <h2>{{ t('log_reading') }}</h2>
+  <input type="hidden" name="csrf" value="{{ csrf() }}"><input type="hidden" name="kind" value="reading">
+  <label for="r-day">{{ t('date') }}</label><input id="r-day" type="date" name="day" value="{{ today }}" max="{{ today }}">
+  <label for="r-bal">{{ t('balance_kwh') }}</label><input id="r-bal" name="balance" type="number" step="0.01" min="0" inputmode="decimal" required>
+  <div class="hint">{{ t('kind_reading_help') }}</div>
+  <div style="margin-top:14px"><button class="btn">{{ t('save') }}</button></div>
+</form>
+{% endif %}
+</div>
+
+<div class="card">
+  <h2>{{ t('logs') }}</h2>
+  {% if entries %}<div class="scroll"><table>
+    <tr><th>{{ t('date') }}</th><th>{{ t('type') }}</th><th>kWh</th><th>RWF</th><th>{{ t('by') }}</th></tr>
+    {% for e in entries %}<tr><td class="num">{{ e.day }}</td><td>{{ t(e.kind) }}</td>
+      <td class="num">{{ e.kwh }}{% if e.estimated %} <small class="muted">({{ t('estimated_tag') }})</small>{% endif %}</td>
+      <td class="num">{{ '{:,}'.format(e.rwf) if e.rwf else '–' }}</td><td>{{ e.who.split()[0] }}</td></tr>{% endfor %}
+  </table></div>
+  {% else %}<p class="muted" style="margin:0">{{ t('no_logs') }}</p>{% endif %}
+</div>
+
+{% if role == 'owner' %}
+<div class="two">
+<div class="card">
+  <h2>{{ t('share_title') }}</h2>
+  {% for p in people %}
+    <div class="row" style="align-items:center;margin:8px 0">
+      <div>{{ p.name or fmt_phone(p.phone) }}<br><small class="muted">{{ fmt_phone(p.phone) }} · {{ t('role_add') if p.role=='add' else t('role_view') }} · {{ t('status_active') if p.status=='active' else t('status_pending') }}</small></div>
+      <form class="inline" style="flex:none" method="post" action="{{ url_for('members.revoke', mid=m.id, aid=p.id) }}"><input type="hidden" name="csrf" value="{{ csrf() }}"><button class="btn danger small">{{ t('remove') }}</button></form>
+    </div>
+  {% endfor %}
+  <form method="post" action="{{ url_for('members.invite', mid=m.id) }}" style="margin-top:12px">
+    <input type="hidden" name="csrf" value="{{ csrf() }}">
+    <label for="i-phone">{{ t('invite') }}</label><input id="i-phone" name="phone" type="tel" inputmode="tel" placeholder="0788 123 456" required>
+    <label for="i-role">{{ t('access_level') }}</label>
+    <select id="i-role" name="role"><option value="view">{{ t('role_view') }}</option><option value="add">{{ t('role_add') }}</option></select>
+    <div style="margin-top:14px"><button class="btn">{{ t('invite') }}</button></div>
+  </form>
+</div>
+<div class="card">
+  <h2>{{ t('activity') }}</h2>
+  {% for a in acts %}<p style="margin:6px 0;font-size:14px"><b>{{ a.name or '?' }}</b> {{ t('act_'+a.action) }} {{ a.detail }}<br><small class="muted">{{ a.ts[:16].replace('T',' ') }} UTC</small></p>{% else %}<p class="muted">{{ t('no_logs') }}</p>{% endfor %}
+</div>
+</div>
+{% endif %}
+{% endblock %}

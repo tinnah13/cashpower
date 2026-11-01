@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card center" style="margin-top:20px">
+  <p class="slip-note">{{ t('token_slip') }}</p>
+  <h1>{{ t('welcome') }}, {{ user.name.split()[0] }}</h1>
+  <p class="lead">{{ t('created_ok') }}</p>
+  <p class="mono-label" style="margin-bottom:6px">{{ t('your_id') }}</p>
+  <div class="id-badge">{{ user.uid }}</div>
+  <div style="margin-top:24px"><a class="btn" href="{{ url_for('views.dashboard') }}">{{ t('go_dashboard') }}</a></div>
+</div>
+<div class="band" style="margin-top:8px" aria-hidden="true"></div>
+{% endblock %}

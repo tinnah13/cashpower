@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% from "_dial.html" import dial with context %}
+{% block shell %}
+<div class="page">
+{% with msgs = get_flashed_messages(with_categories=true) %}{% for cat, m in msgs %}<div class="flash {{ cat }}" role="status">{{ m }}</div>{% endfor %}{% endwith %}
+{% if invites %}
+<div class="card"><h2>{{ t('invitations') }}</h2>
+{% for i in invites %}
+  <div class="row" style="align-items:center;margin:10px 0"><div><b>{{ i.owner_name }}</b> {{ t('invited_by') }} <b>{{ i.nickname }}</b> <span class="pill amber">{{ t('role_add') if i.role=='add' else t('role_view') }}</span></div>
+  <div style="flex:none;display:flex;gap:8px">
+    <form class="inline" method="post" action="{{ url_for('members.answer_invite', aid=i.id, choice='accept') }}"><input type="hidden" name="csrf" value="{{ csrf() }}"><button class="btn small">{{ t('accept') }}</button></form>
+    <form class="inline" method="post" action="{{ url_for('members.answer_invite', aid=i.id, choice='decline') }}"><input type="hidden" name="csrf" value="{{ csrf() }}"><button class="btn ghost small">{{ t('decline') }}</button></form>
+  </div></div>
+{% endfor %}</div>
+{% endif %}
+
+<p class="mono-label">{{ t('my_id') }} · {{ user.uid }}</p>
+<h1>{{ t('dashboard') }}</h1>
+<div class="grid" style="margin-top:20px">
+{% for m in own %}{% set f = fc[m.id] %}
+  <a class="meter-card" href="{{ url_for('meters.meter_page', mid=m.id) }}">
+    <div class="no">{{ m.meter_no[:4] }} {{ m.meter_no[4:8] }} {{ m.meter_no[8:] }}</div>
+    <div class="nick">{{ m.nickname }}<span class="tag">{{ t('owner') }}</span></div>
+    {{ dial(f.days if f else none) }}
+    <div class="foot">{% if f %}{% if f.low %}<b style="color:var(--err)">{{ t('buy_by') }} {{ f.buy_by.strftime('%d/%m') }}</b>{% else %}{{ t('run_out_between') }} {{ f.lo.strftime('%d/%m') }} {{ t('and') }} {{ f.hi.strftime('%d/%m') }}{% endif %}{% else %}{{ t('need_data') }}{% endif %}</div>
+  </a>
+{% endfor %}
+</div>
+
+{% if shared %}
+<h2 style="margin:34px 0 14px">{{ t('shared_with_me') }}</h2>
+<div class="grid">
+{% for m in shared %}{% set f = fc[m.id] %}
+  <a class="meter-card" href="{{ url_for('meters.meter_page', mid=m.id) }}">
+    <div class="no">{{ m.owner_name }}</div>
+    <div class="nick">{{ m.nickname }}<span class="tag amber">{{ t('role_add') if m.role=='add' else t('role_view') }}</span></div>
+    {{ dial(f.days if f else none) }}
+    <div class="foot">{% if f and f.low %}<b style="color:var(--err)">{{ t('buy_by') }} {{ f.buy_by.strftime('%d/%m') }}</b>{% endif %}</div>
+  </a>
+{% endfor %}
+</div>
+{% endif %}
+
+<form class="card" method="post" action="{{ url_for('meters.add_meter') }}" style="margin-top:34px;max-width:560px">
+  <h2>{{ t('add_meter') }}</h2>
+  <input type="hidden" name="csrf" value="{{ csrf() }}">
+  <div class="row">
+    <div><label for="am-no" style="margin-top:0">{{ t('meter_number') }}</label><input id="am-no" name="meter_no" inputmode="numeric" maxlength="13" required></div>
+    <div><label for="am-nick" style="margin-top:0">{{ t('meter_nickname') }}</label><input id="am-nick" name="nickname" maxlength="30" placeholder="{{ t('nickname_hint') }}"></div>
+  </div>
+  <div style="margin-top:16px"><button class="btn">{{ t('add') }}</button></div>
+</form>
+</div>
+{% endblock %}

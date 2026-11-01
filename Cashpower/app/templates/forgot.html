@@ -1,0 +1,11 @@
+{% extends "auth_base.html" %}
+{% block form %}
+<h1>{{ t('reset_title') }}</h1>
+<form class="card" method="post">
+  <input type="hidden" name="csrf" value="{{ csrf() }}">
+  <label for="phone">{{ t('phone') }}</label>
+  <input id="phone" name="phone" type="tel" inputmode="tel" placeholder="0788 123 456" required>
+  <div style="margin-top:18px"><button class="btn">{{ t('send_code') }}</button></div>
+</form>
+<p class="alt"><a href="{{ url_for('auth.login') }}">{{ t('login') }}</a></p>
+{% endblock %}

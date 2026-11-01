@@ -1,0 +1,19 @@
+{% extends "auth_base.html" %}
+{% block title %}{{ t('login') }} · {{ t('app_name') }}{% endblock %}
+{% block form %}
+<h1>{{ t('login') }}</h1>
+<form class="card" method="post" id="login-form" autocomplete="on">
+  <input type="hidden" name="csrf" value="{{ csrf() }}">
+  <label for="phone" style="margin-top:0">{{ t('phone') }}</label>
+  <input id="phone" name="phone" type="tel" inputmode="tel" autocomplete="username tel" placeholder="0788 123 456" required value="{{ request.form.get('phone','') }}">
+  <label for="lpw">{{ t('password') }}</label>
+  <div class="pwrap">
+    <input id="lpw" name="password" type="password" autocomplete="current-password" required>
+    <button type="button" data-toggle-pw="lpw" data-show="{{ t('show') }}" data-hide="{{ t('hide') }}">{{ t('show') }}</button>
+  </div>
+  <label class="terms"><input type="checkbox" name="remember" value="1"><span>{{ t('remember') }}<br><small class="muted">{{ t('remember_hint') }}</small></span></label>
+  <div style="margin-top:20px"><button class="btn">{{ t('login') }}</button></div>
+  <p class="alt"><a href="{{ url_for('auth.forgot') }}">{{ t('forgot') }}</a></p>
+</form>
+<p class="alt">{{ t('no_account') }} <a href="{{ url_for('auth.register') }}">{{ t('signup') }}</a></p>
+{% endblock %}
